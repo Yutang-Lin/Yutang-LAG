@@ -430,8 +430,8 @@ class SharedReplayBuffer(ReplayBuffer):
             value_preds_batch = np.stack(value_preds_batch, axis=1)
 
             # States is just a (N, -1) from_numpy
-            rnn_states_actor_batch = np.stack(rnn_states_actor_batch).reshape(N, *self.rnn_states_actor.shape[2:])
-            rnn_states_critic_batch = np.stack(rnn_states_critic_batch).reshape(N, *self.rnn_states_critic.shape[2:])
+            rnn_states_actor_batch = np.stack(rnn_states_actor_batch).reshape(N, *self.rnn_states_actor.shape[3:])
+            rnn_states_critic_batch = np.stack(rnn_states_critic_batch).reshape(N, *self.rnn_states_critic.shape[3:])
 
             # Flatten the (L, N, ...) from_numpys to (L * N, ...)
             obs_batch = self._flatten(L, N, obs_batch)
