@@ -51,7 +51,6 @@ class PPOTrainer():
                                                                          actions_batch[:, agent_id],
                                                                          masks_batch[:, agent_id],
                                                                          agent_id)
-
             # Obtain the loss function
             ratio = torch.exp(action_log_probs - old_action_log_probs_batch[:, agent_id])
             surr1 = ratio * advantages_batch[:, agent_id]
@@ -64,14 +63,20 @@ class PPOTrainer():
                                    rnn_states_critic_batch.flatten(0, 1),
                                    masks_batch.flatten(0, 1))
         if values.shape != returns_batch.shape:
-            returns_batch = returns_batch.repeat(1, values.shape[0] // returns_batch.shape[0]).reshape(values.shape)
+            returns_batch = returns_batch.repeat(1, num_agents).reshape(values.shape)
+            value_preds_batch = value_preds_batch.repeat(1, num_agents).reshape(values.shape)
+
+        returns_batch = returns_batch.view(-1)
+        value_preds_batch = value_preds_batch.view(-1)
+        values = values.view(-1)
+
         if self.use_clipped_value_loss:
-            value_pred_clipped = value_preds_batch.flatten(0, 1) + (values - value_preds_batch.flatten(0, 1)).clamp(-self.clip_param, self.clip_param)
-            value_losses = (values - returns_batch.flatten(0, 1)).pow(2)
-            value_losses_clipped = (value_pred_clipped - returns_batch.flatten(0, 1)).pow(2)
+            value_pred_clipped = value_preds_batch + (values - value_preds_batch).clamp(-self.clip_param, self.clip_param)
+            value_losses = (values - returns_batch).pow(2)
+            value_losses_clipped = (value_pred_clipped - returns_batch).pow(2)
             value_loss = 0.5 * torch.max(value_losses, value_losses_clipped)
         else:
-            value_loss = 0.5 * (returns_batch.flatten(0, 1) - values).pow(2)
+            value_loss = 0.5 * (returns_batch - values).pow(2)
         value_loss = value_loss.mean()
 
         policy_entropy_loss = -dist_entropy.mean()
