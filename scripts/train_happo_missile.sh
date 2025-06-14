@@ -2,8 +2,8 @@
 
 env="MultipleCombat"
 scenario="2v2/ShootMissile/HierarchySelfplay"
-algo="mappo"
-exp="v1"
+algo="happo"
+exp="v1missile"
 seed=0
 
 echo "env is ${env}, scenario is ${scenario}, algo is ${algo}, exp is ${exp}, seed is ${seed}"
