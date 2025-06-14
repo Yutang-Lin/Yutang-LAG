@@ -15,6 +15,7 @@ def get_config():
     parser = _get_recurrent_config(parser)
     parser = _get_optimizer_config(parser)
     parser = _get_ppo_config(parser)
+    parser = _get_sac_config(parser)
     parser = _get_selfplay_config(parser)
     parser = _get_save_config(parser)
     parser = _get_log_config(parser)
@@ -56,7 +57,7 @@ def _get_prepare_config(parser: argparse.ArgumentParser):
     group = parser.add_argument_group("Prepare parameters")
     group.add_argument("--env-name", type=str, default='JSBSim',
                        help="specify the name of environment")
-    group.add_argument("--algorithm-name", type=str, default='ppo', choices=["ppo", "mappo"],
+    group.add_argument("--algorithm-name", type=str, default='ppo', choices=["ppo", "mappo", "happo", "hasac"],
                        help="Specifiy the algorithm (default ppo)")
     group.add_argument("--experiment-name", type=str, default="check",
                        help="An identifier to distinguish different experiment.")
@@ -212,6 +213,30 @@ def _get_ppo_config(parser: argparse.ArgumentParser):
                        help="By default, use max norm of gradients. If set, do not use.")
     group.add_argument("--max-grad-norm", type=float, default=2,
                        help='max norm of gradients (default: 2)')
+    return parser
+
+
+def _get_sac_config(parser: argparse.ArgumentParser):
+    """
+    SAC parameters:
+        --alpha <float>
+            temperature parameter for entropy regularization (default: 0.2)
+        --tau <float>
+            target network update rate (default: 0.005)
+        --target-update-interval <int>
+            frequency of target network updates (default: 1)
+        --automatic-entropy-tuning
+            by default false. If set, automatically tune entropy coefficient
+    """
+    group = parser.add_argument_group("SAC parameters")
+    group.add_argument("--alpha", type=float, default=0.2,
+                       help='temperature parameter for entropy regularization (default: 0.2)')
+    group.add_argument("--tau", type=float, default=0.005,
+                       help='target network update rate (default: 0.005)')
+    group.add_argument("--target-update-interval", type=int, default=1,
+                       help='frequency of target network updates (default: 1)')
+    group.add_argument("--automatic-entropy-tuning", action='store_true', default=False,
+                       help='automatically tune entropy coefficient')
     return parser
 
 
