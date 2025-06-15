@@ -15,5 +15,5 @@ CUDA_VISIBLE_DEVICES=0 python render/render_jsbsim.py \
     --hidden-size "128 128" --act-hidden-size "128 128" --recurrent-hidden-size 128 --recurrent-hidden-layers 1 --data-chunk-length 8 \
     --use-selfplay --selfplay-algorithm "fsp" --n-choose-opponents 1 \
     --use-eval --n-eval-rollout-threads 1 --eval-interval 1 --eval-episodes 1 \
-    --user-name "jyh" --use-wandb --wandb-name "thu_jsbsim" \
-    --model-dir './results/MultipleCombat/2v2/ShootMissile/HierarchySelfplay/mappo/v1missile/wandb' --render-mode real_time
+    --user-name "jyh" --wandb-name "thu_jsbsim" \
+    --model-dir './results/MultipleCombat/2v2/ShootMissile/HierarchySelfplay/mappo/v1missile/wandb/latest-run/files'

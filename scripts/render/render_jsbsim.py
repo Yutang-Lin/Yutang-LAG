@@ -96,7 +96,7 @@ def main(args):
         "num_agents": num_agents,
         "device": device,
         "run_dir": run_dir,
-        "render_mode": 'real_time'
+        "render_mode": 'save'
     }
 
     # run experiments

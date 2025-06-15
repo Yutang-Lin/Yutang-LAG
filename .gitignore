@@ -1,6 +1,7 @@
 # ignore files
 test.py
 results
+results_old
 runs
 *.npy
 *.acmi

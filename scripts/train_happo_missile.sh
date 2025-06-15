@@ -16,3 +16,4 @@ CUDA_VISIBLE_DEVICES=0 python train/train_jsbsim.py \
     --use-selfplay --selfplay-algorithm "fsp" --n-choose-opponents 1 \
     --use-eval --n-eval-rollout-threads 1 --eval-interval 1 --eval-episodes 1 \
     --user-name "jyh" --use-wandb --wandb-name "thu_jsbsim" \
+    --model-dir './results/MultipleCombat/2v2/ShootMissile/HierarchySelfplay/happo/v1missile/wandb/latest-run/files'

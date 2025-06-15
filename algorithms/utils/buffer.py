@@ -487,27 +487,36 @@ class HAReplayBuffer(SharedReplayBuffer):
                 self.joint_value_preds[-1] = np.sum(next_value, axis=1)
                 gae = 0
                 for step in reversed(range(self.rewards.shape[0])):
-                    td_delta = self.joint_rewards[step] + self.gamma * self.joint_value_preds[step + 1] * self.masks[step + 1, 0, 0:1] - self.joint_value_preds[step]
-                    gae = td_delta + self.gamma * self.gae_lambda * self.masks[step + 1, 0, 0:1] * gae
-                    gae = gae * self.bad_masks[step + 1, :, 0:1]
+                    # Calculate TD error using joint rewards and values
+                    td_delta = self.joint_rewards[step] + self.gamma * self.joint_value_preds[step + 1] * np.all(self.masks[step + 1, :, 0:1], axis=1) - self.joint_value_preds[step]
+                    # Update GAE using TD error and mask
+                    gae = td_delta + self.gamma * self.gae_lambda * np.all(self.masks[step + 1, :, 0:1], axis=1) * gae
+                    # Apply bad mask to GAE
+                    gae = gae * self.bad_masks[step + 1, 0, 0:1]  # Fixed: Use same indexing as masks
+                    # Store returns as GAE + value
                     self.joint_returns[step] = gae + self.joint_value_preds[step]
             else:
                 self.joint_returns[-1] = np.sum(next_value, axis=1)
                 for step in reversed(range(self.rewards.shape[0])):
-                    self.joint_returns[step] = (self.joint_returns[step + 1] * self.gamma * self.masks[step + 1, 0, 0:1] + self.joint_rewards[step]) \
+                    # Calculate returns using proper time limits
+                    self.joint_returns[step] = (self.joint_returns[step + 1] * self.gamma * np.all(self.masks[step + 1, :, 0:1], axis=1) + self.joint_rewards[step]) \
                         * self.bad_masks[step + 1, 0, 0:1] + (1 - self.bad_masks[step + 1, 0, 0:1]) * self.joint_value_preds[step]
         else:
             if self.use_gae:
                 self.joint_value_preds[-1] = np.sum(next_value, axis=1)
                 gae = 0
                 for step in reversed(range(self.rewards.shape[0])):
-                    td_delta = self.joint_rewards[step] + self.gamma * self.joint_value_preds[step + 1] * self.masks[step + 1, 0, 0:1] - self.joint_value_preds[step]
-                    gae = td_delta + self.gamma * self.gae_lambda * self.masks[step + 1, 0, 0:1] * gae
+                    # Calculate TD error using joint rewards and values
+                    td_delta = self.joint_rewards[step] + self.gamma * self.joint_value_preds[step + 1] * np.all(self.masks[step + 1, :, 0:1], axis=1) - self.joint_value_preds[step]
+                    # Update GAE using TD error and mask
+                    gae = td_delta + self.gamma * self.gae_lambda * np.all(self.masks[step + 1, :, 0:1], axis=1) * gae
+                    # Store returns as GAE + value
                     self.joint_returns[step] = gae + self.joint_value_preds[step]
             else:
                 self.joint_returns[-1] = np.sum(next_value, axis=1)
                 for step in reversed(range(self.rewards.shape[0])):
-                    self.joint_returns[step] = self.joint_returns[step + 1] * self.gamma * self.masks[step + 1, 0, 0:1] + self.joint_rewards[step]
+                    # Calculate returns without proper time limits
+                    self.joint_returns[step] = self.joint_returns[step + 1] * self.gamma * np.all(self.masks[step + 1, :, 0:1], axis=1) + self.joint_rewards[step]
 
         # Compute individual returns for value function training
         super().compute_returns(next_value)
