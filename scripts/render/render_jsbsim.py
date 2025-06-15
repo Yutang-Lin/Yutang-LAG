@@ -11,6 +11,8 @@ import setproctitle
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
 from config import get_config
 from runner.share_jsbsim_runner import ShareJSBSimRunner
+from runner.ha_jsbsim_runner import HAJSBSimRunner
+from runner.haq_jsbsim_runner import HAQJSBSimRunner
 from envs.JSBSim.envs import SingleCombatEnv, SingleControlEnv, MultipleCombatEnv
 from envs.env_wrappers import DummyVecEnv, ShareDummyVecEnv
 
@@ -99,7 +101,12 @@ def main(args):
 
     # run experiments
     if all_args.env_name == "MultipleCombat":
-        runner = ShareJSBSimRunner(config)
+        if all_args.algorithm_name == "happo":
+            runner = HAJSBSimRunner(config)
+        elif all_args.algorithm_name == "hasac":
+            runner = HAQJSBSimRunner(config)
+        else:
+            runner = ShareJSBSimRunner(config)
     else:
         if all_args.use_selfplay:
             from runner.selfplay_jsbsim_runner import SelfplayJSBSimRunner as Runner

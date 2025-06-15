@@ -315,9 +315,9 @@ class HAQJSBSimRunner(Runner):
             render_opponent_rnn_states = np.zeros_like(render_rnn_states, dtype=np.float32)
         while True:
             self.policy.prep_rollout()
-            render_actions, render_rnn_states = self.policy.act(np.concatenate(render_obs),
-                                                                np.concatenate(render_rnn_states),
-                                                                np.concatenate(render_masks),
+            render_actions, render_rnn_states = self.policy.act(render_obs,
+                                                                render_rnn_states,
+                                                                render_masks,
                                                                 deterministic=True)
             render_actions = np.expand_dims(_t2n(render_actions), axis=0)
             render_rnn_states = np.expand_dims(_t2n(render_rnn_states), axis=0)
@@ -325,9 +325,9 @@ class HAQJSBSimRunner(Runner):
             # [Selfplay] get actions of opponent policy
             if self.use_selfplay:
                 render_opponent_actions, render_opponent_rnn_states \
-                    = self.eval_opponent_policy.act(np.concatenate(render_opponent_obs),
-                                                    np.concatenate(render_opponent_rnn_states),
-                                                    np.concatenate(render_opponent_masks),
+                    = self.eval_opponent_policy.act(render_opponent_obs,
+                                                    render_opponent_rnn_states,
+                                                    render_opponent_masks,
                                                     deterministic=True)
                 render_opponent_actions = np.expand_dims(_t2n(render_opponent_actions), axis=0)
                 render_opponent_rnn_states = np.expand_dims(_t2n(render_opponent_rnn_states), axis=0)
